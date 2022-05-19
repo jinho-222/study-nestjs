@@ -1,11 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ClientService } from './client.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly clientService: ClientService,
+  ) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -13,7 +25,11 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
+    const res = await this.clientService.getUsersList();
+    res.subscribe(({ data }) => {
+      console.log(data.data);
+    });
     return this.userService.findAll();
   }
 
